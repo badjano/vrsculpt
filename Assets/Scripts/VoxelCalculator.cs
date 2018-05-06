@@ -57,7 +57,7 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
         }
     }
 
-    public void CreateChunk(int i, int j, int k)
+	public void CreateChunk(int i, int j, int k)
     {
         string name = "chunk_" + i + "_" + j + "_" + k;
         GameObject chunk = GameObject.Find(name);
@@ -87,6 +87,12 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 		public float NA1,NA2,NA3;
 		public float NB1,NB2,NB3;
 		public float NC1,NC2,NC3;
+		
+		//Colors
+//		public float CA1,CA2,CA3;
+//		public float CB1,CB2,CB3;
+//		public float CC1,CC2,CC3;
+		
 	};
 	
 	
@@ -218,6 +224,7 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 		int[] tris = new int[count*3];
 		Vector2[] uvs = new Vector2[count*3];
 		Vector3[] normals = new Vector3[count*3];
+		Color[] colors = new Color[count*3];
 		
 		//Parse triangles
 		for (int ix=0;ix<count; ix++)
@@ -230,7 +237,8 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 			vertices[vindex] = vPos*_Scale;
 			normals[vindex] = new Vector3(DataArray[ix].NA1,DataArray[ix].NA2,DataArray[ix].NA3);
 			tris[vindex] = vindex;
-			uvs[vindex] = new Vector2 (vertices[vindex].z, vertices[vindex].x)*-_UVScale;			
+			uvs[vindex] = new Vector2 (vertices[vindex].z, vertices[vindex].x)*-_UVScale;
+//			colors[vindex] = new Color(DataArray[ix].CA1, DataArray[ix].CA2, DataArray[ix].CA3);
 			
 			vindex++;
 		
@@ -240,6 +248,7 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 			normals[vindex] = new Vector3(DataArray[ix].NB1,DataArray[ix].NB2,DataArray[ix].NB3);
 			tris[vindex] = vindex;
 			uvs[vindex] = new Vector2 (vertices[vindex].z, vertices[vindex].x)*-_UVScale;	
+//			colors[vindex] = new Color(DataArray[ix].CB1, DataArray[ix].CB2, DataArray[ix].CB3);
 			
 			vindex++;
 		
@@ -249,6 +258,7 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 			normals[vindex] = new Vector3(DataArray[ix].NC1,DataArray[ix].NC2,DataArray[ix].NC3);
 			tris[vindex] = vindex;
 			uvs[vindex] = new Vector2 (vertices[vindex].z, vertices[vindex].x)*-_UVScale;	
+//			colors[vindex] = new Color(DataArray[ix].CC1, DataArray[ix].CC2, DataArray[ix].CC3);
 			
 			vindex++;
 		}
@@ -261,7 +271,7 @@ public class VoxelCalculator : Singleton<VoxelCalculator> {
 		NewMesh.uv = uvs; //Unwrapping.GeneratePerTriangleUV(NewMesh);
 		NewMesh.triangles = tris;
 		NewMesh.normals = normals; //NewMesh.RecalculateNormals();
-		
+//		NewMesh.colors = colors;
 		;
 		
 		CBuffer.Dispose();

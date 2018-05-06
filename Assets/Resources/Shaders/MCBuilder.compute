@@ -11,6 +11,7 @@ struct Poly
     float3 A;
     float3 B;
     float3 C;
+    
     float3 NA;
     float3 NB;
     float3 NC;
@@ -90,7 +91,7 @@ groupshared int index_counter = 0;
 		return sum / 9;
 	}
 	
-	[numthreads(27,27,1)]
+	[numthreads(32,32,1)]
 	void CSMain (uint3 id : SV_DispatchThreadID)
 	{
 	
@@ -408,7 +409,7 @@ groupshared int index_counter = 0;
 		//z = id.z;
 		
 		//I can't use 32x32x32 threaded calculation because of GPUs limit, so I have to make this:
-		for (int qz = 2; qz < _Size+2; qz++)
+		for (qz = 2; qz < _Size+2; qz++)
 		{
 			//Voxel position
 			p = float3(x,y,qz)*20;
@@ -464,6 +465,7 @@ groupshared int index_counter = 0;
 					float amount = (cap - weights[va]) / (weights[vb] - weights[va]);
 					NewPoly.A = lerp( p + cubeVerts[va],  p + cubeVerts[vb], amount);
 					NewPoly.NA = -TriLinearInterpNormal(NewPoly.A);
+					//NewPoly.CA = float3(1,1,1)
 										
 					
 					va = edge_to_verts[polyEdges.y].x;
@@ -471,6 +473,7 @@ groupshared int index_counter = 0;
 					amount = (cap - weights[va]) / (weights[vb] - weights[va]);
 					NewPoly.B = lerp( p + cubeVerts[va],  p + cubeVerts[vb], amount);
 					NewPoly.NB = -TriLinearInterpNormal(NewPoly.B);
+					//NewPoly.CB = float3(1,1,1)
 
 
 					va = edge_to_verts[polyEdges.z].x;
@@ -478,6 +481,7 @@ groupshared int index_counter = 0;
 					amount = (cap - weights[va]) / (weights[vb] - weights[va]);
 					NewPoly.C = lerp( p + cubeVerts[va],  p + cubeVerts[vb], amount);
 					NewPoly.NC = -TriLinearInterpNormal(NewPoly.C);
+					//NewPoly.CC = float3(1,1,1)
 
 					//Increase buffer index counter and get current one
 					InterlockedAdd(index_counter,1,Index);

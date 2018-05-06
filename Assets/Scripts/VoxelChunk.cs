@@ -13,6 +13,8 @@ public class VoxelChunk : MonoBehaviour {
 
     private bool neighboursBuilt;
 
+	[SerializeField] private bool _cloud;
+
     public float Size
 	{
 		get { return transform.localScale.z*(_SizeZ)*20.0f; }
@@ -22,7 +24,8 @@ public class VoxelChunk : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start() {
+	private void Start() {
+    
         _SizeZ = VoxelCalculator._ChunkSizeZ;
 
         DensityVolume = new RenderTexture(_SizeZ + 4, _SizeZ + 4, 0, RenderTextureFormat.RFloat, RenderTextureReadWrite.sRGB);
@@ -34,13 +37,11 @@ public class VoxelChunk : MonoBehaviour {
         DensityVolume.wrapMode = TextureWrapMode.Clamp;
         DensityVolume.Create();
 
-        MeshFilter MF = GetComponent<MeshFilter>();
-
+        var MF = GetComponent<MeshFilter>();
         if (MF.sharedMesh == null)
             MF.sharedMesh = new Mesh();
-
-        MeshRenderer MR = GetComponent<MeshRenderer>();
-        MR.material = VoxelCalculator.Instance._DefaultMaterial;
+        var MR = GetComponent<MeshRenderer>();
+//        MR.material = VoxelCalculator.Instance._DefaultMaterial;
 
         VoxelCalculator.Instance.CreateEmptyVolume(DensityVolume, _SizeZ + 4);
     }
@@ -48,7 +49,7 @@ public class VoxelChunk : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         //DrawVoxel(Color.red, transform.position);
-        if ( shouldUpdate)
+        if ( shouldUpdate || _cloud )
         {
             UpdateMesh();
         }
@@ -65,26 +66,24 @@ public class VoxelChunk : MonoBehaviour {
 
     private void checkNeighbours()
     {
-        if (!neighboursBuilt)
-        {
-            string[] nameArr = this.name.Split('_');
-            int x = int.Parse(nameArr[1]);
-            int y = int.Parse(nameArr[2]);
-            int z = int.Parse(nameArr[3]);
+	    if (neighboursBuilt) return;
+	    var nameArr = this.name.Split('_');
+	    var x = int.Parse(nameArr[1]);
+	    var y = int.Parse(nameArr[2]);
+	    var z = int.Parse(nameArr[3]);
 
-            for (int i = x-1; i < x+2; i++)
-            {
-                for (int j = y-1; j < y+2; j++)
-                {
-                    for (int k = z-1; k < z+2; k++)
-                    {
-                        VoxelCalculator.Instance.CreateChunk(i, j, k);
-                    }
-                }
-            }
+	    for (var i = x-1; i < x+2; i++)
+	    {
+		    for (var j = y-1; j < y+2; j++)
+		    {
+			    for (var k = z-1; k < z+2; k++)
+			    {
+				    VoxelCalculator.Instance.CreateChunk(i, j, k);
+			    }
+		    }
+	    }
 
-            neighboursBuilt = true;
-        }
+	    neighboursBuilt = true;
     }
 
     private void OnTriggerExit(Collider other)
@@ -97,10 +96,18 @@ public class VoxelChunk : MonoBehaviour {
 
     public void UpdateMesh()
     {
-        float startTime = Time.realtimeSinceStartup;
+        var startTime = Time.realtimeSinceStartup;
 
-        MeshRenderer MR = GetComponent<MeshRenderer>();
-        MeshFilter MF = GetComponent<MeshFilter>();
+        var MR = GetComponent<MeshRenderer>();
+        var MF = GetComponent<MeshFilter>();
+	    
+	    if (_cloud)
+	    {
+		    VoxelCalculator.Instance.CreateEmptyVolume(DensityVolume, _SizeZ + 4);
+		    VoxelCalculator.Instance.CreateNoiseVolume(DensityVolume, transform.position, _SizeZ + 4);
+		    VoxelCalculator.Instance.BuildChunkMesh(DensityVolume, MF.sharedMesh);
+		    return;
+	    }
 
         //VoxelCalculator.Instance.CreateEmptyVolume(DensityVolume, _SizeZ + 4);
         VoxelCalculator.Instance.DrawSphere(DensityVolume, transform.localPosition, _SizeZ + 4);
@@ -111,7 +118,7 @@ public class VoxelChunk : MonoBehaviour {
         //Debug.Log("CHUNK CREATION TIME = " + (1000.0f*(Time.realtimeSinceStartup-startTime)).ToString()+"ms");
     }
 
-    void OnDestroy()
+	private void OnDestroy()
 	{
 		if (DensityVolume!=null){
 			
