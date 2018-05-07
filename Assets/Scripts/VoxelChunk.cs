@@ -21,7 +21,7 @@ public class VoxelChunk : MonoBehaviour {
 	}
 
     private RenderTexture DensityVolume;
-
+    private Color[] Colors;
 
     // Use this for initialization
 	private void Start() {
@@ -106,6 +106,8 @@ public class VoxelChunk : MonoBehaviour {
 		    VoxelCalculator.Instance.CreateEmptyVolume(DensityVolume, _SizeZ + 4);
 		    VoxelCalculator.Instance.CreateNoiseVolume(DensityVolume, transform.position, _SizeZ + 4);
 		    VoxelCalculator.Instance.BuildChunkMesh(DensityVolume, MF.sharedMesh);
+			Colors = new Color[MF.sharedMesh.vertexCount];
+		    VoxelCalculator.Instance.PaintSphereCPU(Colors, transform, MF.sharedMesh);
 		    return;
 	    }
 
@@ -113,6 +115,12 @@ public class VoxelChunk : MonoBehaviour {
         VoxelCalculator.Instance.DrawSphere(DensityVolume, transform.localPosition, _SizeZ + 4);
         //VoxelCalculator.Instance.CreateNoiseVolume(DensityVolume, transform.position, _SizeZ + 4);
         VoxelCalculator.Instance.BuildChunkMesh(DensityVolume, MF.sharedMesh);
+	    if (Colors == null || Colors.Length != MF.sharedMesh.vertexCount)
+	    {
+	    	Colors = new Color[MF.sharedMesh.vertexCount];
+	    }
+//        VoxelCalculator.Instance.PaintSphere(Colors, transform.localPosition, MF.sharedMesh, _SizeZ + 4);
+        VoxelCalculator.Instance.PaintSphereCPU(Colors, transform, MF.sharedMesh);
 
         //GetComponent<MeshCollider>().sharedMesh = MF.sharedMesh;
         //Debug.Log("CHUNK CREATION TIME = " + (1000.0f*(Time.realtimeSinceStartup-startTime)).ToString()+"ms");

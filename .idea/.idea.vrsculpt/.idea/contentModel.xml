@@ -9,7 +9,12 @@
       <e p="Assets" t="Include">
         <e p="Materials" t="Include">
           <e p="Textures" t="Include">
-            <e p="About these PBR files.txt" t="Include" />
+            <e p="holey-rock1" t="Include">
+              <e p="About these PBR files.txt" t="Include" />
+            </e>
+            <e p="rustediron2" t="Include">
+              <e p="About these PBR files.txt" t="Include" />
+            </e>
           </e>
         </e>
         <e p="Oculus" t="Include">
@@ -240,11 +245,13 @@
         </e>
         <e p="Resources" t="Include">
           <e p="Shaders" t="Include">
+            <e p="Colorizer3d.compute" t="Include" />
             <e p="MCBuilder.compute" t="Include" />
             <e p="Simplex3d.compute" t="Include" />
           </e>
         </e>
         <e p="Scripts" t="Include">
+          <e p="Billboard.cs" t="Include" />
           <e p="FlyingCamera.cs" t="Include" />
           <e p="PressureScale.cs" t="Include" />
           <e p="Singletone.cs" t="Include" />
